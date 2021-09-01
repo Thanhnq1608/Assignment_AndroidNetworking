@@ -17,14 +17,16 @@
         <activity android:name=".ForgetPassActivity"></activity>
         <activity android:name=".LogUpActivity" />
         <activity android:name=".LoginActivity">
+
+        </activity>
+        <activity android:name=".InsertActivity" />
+        <activity android:name=".HelloActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".InsertActivity" />
-        <activity android:name=".HelloActivity"></activity>
         <activity android:name=".MainActivity" />
     </application>
 

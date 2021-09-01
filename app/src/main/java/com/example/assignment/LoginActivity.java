@@ -94,12 +94,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void validateForm() {
+        boolean temp=true;
         if (edtUser.getText().toString().trim().equals("") || edtPass.getText().toString().trim().equals("")) {
             Toast.makeText(LoginActivity.this, "Bạn không được bỏ trống các ô!", Toast.LENGTH_SHORT).show();
         } else {
             for (int i = 0; i < userList.size(); i++) {
                 if (edtUser.getText().toString().equalsIgnoreCase(userList.get(i).getUsername())) {
                     if (edtPass.getText().toString().equalsIgnoreCase(userList.get(i).getPassword())) {
+                        temp=false;
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                     } else {
@@ -107,9 +109,10 @@ public class LoginActivity extends AppCompatActivity {
                         edtPass.setBackgroundResource(R.color.red);
                         break;
                     }
-                } else {
-                    Toast.makeText(LoginActivity.this, "Tài Khoản không tồn tại!", Toast.LENGTH_SHORT).show();
                 }
+            }
+            if (temp){
+                Toast.makeText(LoginActivity.this, "Tài Khoản không tồn tại!", Toast.LENGTH_SHORT).show();
             }
         }
     }
