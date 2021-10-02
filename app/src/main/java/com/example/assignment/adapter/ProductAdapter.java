@@ -1,5 +1,6 @@
 package com.example.assignment.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -21,9 +22,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.assignment.R;
-import com.example.assignment.getData.InterfaceProd;
 import com.example.assignment.model.Product;
-import com.example.assignment.model.ResData;
+import com.example.assignment.model.RespondStatus;
+import com.example.assignment.utilities.ApiService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -34,13 +35,11 @@ import java.util.Comparator;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
     private Context context;
     private ArrayList<Product> productList;
-    Dialog dialog;
+    private Dialog dialog;
 
     public ProductAdapter(Context context, ArrayList<Product> productList) {
         this.context = context;
@@ -57,6 +56,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         return viewHolder;
     }
 
+    @SuppressLint("RecyclerView")
     @Override
     public void onBindViewHolder(@NonNull ProductAdapter.ViewHolder holder, int position) {
         //Sắp xếp sản phẩm theo thứ tự A,B,C...
@@ -74,22 +74,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         }
 
         //Set image Bimap vào ImageView
-        final Thread t1 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // lấy dứ liệu về
-                final Bitmap b = ImageLoading(product.getAvatar());
-                //đẩy lên giao diện
-                holder.avaProd.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(context, "Thanh Cong", Toast.LENGTH_SHORT).show();
-                        holder.avaProd.setImageBitmap(b);
-                    }
-                });
-            }
-        });
-        t1.start();//bắt đầu thực hiện tiến trình
+        setImageBitmap(product.getAvatar(), holder.avaProd);
 
         holder.namePod.setText(product.getName());
         holder.priceProd.setText("Giá: " + product.getPrice());
@@ -132,90 +117,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.updProd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog = new Dialog(context);
-                dialog.setContentView(R.layout.item_dialog_update);
-                dialog.setTitle("Update Product");
-                dialog.setCancelable(true);
-                ImageView imgAva;
-                TextView tvName;
-                EditText edtUpDes, edtUpPrice, edtUpStock;
-                Button btnUp, btnCancel;
-                imgAva = dialog.findViewById(R.id.update_avatarProd);
-                tvName = dialog.findViewById(R.id.update_tv_nameProd);
-                edtUpPrice = dialog.findViewById(R.id.update_priceProd);
-                edtUpStock = dialog.findViewById(R.id.update_soLuongTonProd);
-                edtUpDes = dialog.findViewById(R.id.update_desProd);
-                btnUp = dialog.findViewById(R.id.update_btnUpdate);
-                btnCancel = dialog.findViewById(R.id.update_btnCancel);
-
-                tvName.setText(productList.get(position).getName());
-
-                final Thread t2 = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // lấy dứ liệu về
-                        final Bitmap b = ImageLoading(productList.get(position).getAvatar());
-                        //đẩy lên giao diện
-                        holder.avaProd.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                imgAva.setImageBitmap(b);
-                            }
-                        });
-                    }
-                });
-                t2.start();//bắt đầu thực hiện tiến trình
-
-                edtUpPrice.setText(String.valueOf(productList.get(position).getPrice()));
-                edtUpStock.setText(String.valueOf(productList.get(position).getSoLuongTon()));
-                edtUpDes.setText(productList.get(position).getDescription());
-
-                btnCancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-                btnUp.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //Update item vào Database qua API
-                        Retrofit retrofit = new Retrofit.Builder()
-                                .baseUrl("https://infinite-waters-71846.herokuapp.com/")
-                                .addConverterFactory(GsonConverterFactory.create())
-                                .build();
-                        InterfaceProd interfaceProd = retrofit.create(InterfaceProd.class);
-                        Call<ResData> call = interfaceProd.updateCall(
-                                Integer.parseInt(edtUpPrice.getText().toString()),
-                                Integer.parseInt(edtUpStock.getText().toString()),
-                                edtUpDes.getText().toString(), product.getId());
-                        call.enqueue(new Callback<ResData>() {
-                            @Override
-                            public void onResponse(Call<ResData> call, Response<ResData> response) {
-                                if (response.isSuccessful()) {
-
-                                    Toast.makeText(context, "" + response.body().getStatus() + "Product: " + product.getName(), Toast.LENGTH_SHORT).show();
-                                    productList.get(position).setPrice(Integer.parseInt(edtUpPrice.getText().toString()));
-                                    productList.get(position).setSoLuongTon(Integer.parseInt(edtUpStock.getText().toString()));
-                                    productList.get(position).setDescription(edtUpDes.getText().toString());
-                                    notifyDataSetChanged();
-                                    dialog.dismiss();
-
-                                } else {
-                                    Toast.makeText(context, "" + response.code(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<ResData> call, Throwable t) {
-                                Log.e("Lỗi", t.getMessage());
-                            }
-                        });
-
-                    }
-                });
-
-                dialog.show();
+                setDialogUpdate(product);
             }
         });
 
@@ -226,29 +128,24 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         aBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl("https://infinite-waters-71846.herokuapp.com/")
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-                InterfaceProd interfaceProd = retrofit.create(InterfaceProd.class);
-                Call<ResData> call = interfaceProd.delCall(product.getId());
-                call.enqueue(new Callback<ResData>() {
-                    @Override
-                    public void onResponse(Call<ResData> call, Response<ResData> response) {
-                        if (response.isSuccessful()) {
-                            Toast.makeText(context, "" + response.body().getStatus(), Toast.LENGTH_SHORT).show();
-                            productList.remove(position);
-                            notifyDataSetChanged();
-                        } else {
-                            Toast.makeText(context, "" + response.code(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
+                ApiService.apiService.delCall(product.getId())
+                        .enqueue(new Callback<RespondStatus>() {
+                            @Override
+                            public void onResponse(Call<RespondStatus> call, Response<RespondStatus> response) {
+                                if (response.isSuccessful()) {
+                                    Toast.makeText(context, "" + response.body().getStatus(), Toast.LENGTH_SHORT).show();
+                                    productList.remove(position);
+                                    notifyDataSetChanged();
+                                } else {
+                                    Toast.makeText(context, "" + response.code(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
 
-                    @Override
-                    public void onFailure(Call<ResData> call, Throwable t) {
-                        Toast.makeText(context, "Lỗi" + t.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                            @Override
+                            public void onFailure(Call<RespondStatus> call, Throwable t) {
+                                Toast.makeText(context, "Lỗi" + t.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
 
             }
@@ -278,9 +175,29 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         return 0;
     }
 
+    //Set image Bimap vào ImageView
+    private void setImageBitmap(String ava, ImageView image) {
+        final Thread t1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // lấy dứ liệu về
+                final Bitmap b = ImageLoading(ava);
+                //đẩy lên giao diện
+                image.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, "Thanh Cong", Toast.LENGTH_SHORT).show();
+                        image.setImageBitmap(b);
+                    }
+                });
+            }
+        });
+        t1.start();//bắt đầu thực hiện tiến trình
+    }
+
     Bitmap b = null;
 
-    public Bitmap ImageLoading(String str) {
+    private Bitmap ImageLoading(String str) {
         URL url;
         try {
             url = new URL(str);
@@ -290,6 +207,72 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         }
 
         return b;
+    }
+
+    private void setDialogUpdate(Product product) {
+        dialog = new Dialog(context);
+        dialog.setContentView(R.layout.item_dialog_update);
+        dialog.setTitle("Update Product");
+        dialog.setCancelable(true);
+        ImageView imgAva;
+        TextView tvName;
+        EditText edtUpDes, edtUpPrice, edtUpStock;
+        Button btnUp, btnCancel;
+        imgAva = dialog.findViewById(R.id.update_avatarProd);
+        tvName = dialog.findViewById(R.id.update_tv_nameProd);
+        edtUpPrice = dialog.findViewById(R.id.update_priceProd);
+        edtUpStock = dialog.findViewById(R.id.update_soLuongTonProd);
+        edtUpDes = dialog.findViewById(R.id.update_desProd);
+        btnUp = dialog.findViewById(R.id.update_btnUpdate);
+        btnCancel = dialog.findViewById(R.id.update_btnCancel);
+
+        tvName.setText(product.getName());
+        setImageBitmap(product.getAvatar(), imgAva);
+
+        edtUpPrice.setText(String.valueOf(product.getPrice()));
+        edtUpStock.setText(String.valueOf(product.getSoLuongTon()));
+        edtUpDes.setText(product.getDescription());
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        btnUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Update item vào Database qua API
+                ApiService.apiService.updateCall(
+                        Integer.parseInt(edtUpPrice.getText().toString()),
+                        Integer.parseInt(edtUpStock.getText().toString()),
+                        edtUpDes.getText().toString(), product.getId())
+                        .enqueue(new Callback<RespondStatus>() {
+                            @Override
+                            public void onResponse(Call<RespondStatus> call, Response<RespondStatus> response) {
+                                if (response.isSuccessful()) {
+                                    Toast.makeText(context, "" + response.body().getStatus() + "Product: " + product.getName(), Toast.LENGTH_SHORT).show();
+                                    product.setPrice(Integer.parseInt(edtUpPrice.getText().toString()));
+                                    product.setSoLuongTon(Integer.parseInt(edtUpStock.getText().toString()));
+                                    product.setDescription(edtUpDes.getText().toString());
+                                    notifyDataSetChanged();
+                                    dialog.dismiss();
+
+                                } else {
+                                    Toast.makeText(context, "" + response.code(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<RespondStatus> call, Throwable t) {
+                                Log.e("Lỗi", t.getMessage());
+                            }
+                        });
+
+            }
+        });
+
+        dialog.show();
     }
 
 

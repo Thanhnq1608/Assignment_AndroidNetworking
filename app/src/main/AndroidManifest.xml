@@ -14,20 +14,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Assignment"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ForgetPassActivity"></activity>
-        <activity android:name=".LogUpActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".activity.ForgetPassActivity"></activity>
+        <activity android:name=".activity.LogUpActivity" />
+        <activity android:name=".activity.LoginActivity">
 
         </activity>
-        <activity android:name=".InsertActivity" />
-        <activity android:name=".HelloActivity">
+        <activity android:name=".activity.InsertActivity" />
+        <activity android:name=".activity.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+        <activity android:name=".activity.MainActivity" />
     </application>
 
 </manifest>

@@ -1,6 +1,6 @@
 package com.example.assignment.model;
 
-public class ResData {
+public class RespondStatus {
     private String status;
 
     public String getStatus() {

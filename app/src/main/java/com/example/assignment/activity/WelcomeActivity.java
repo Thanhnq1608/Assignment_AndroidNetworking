@@ -1,11 +1,13 @@
-package com.example.assignment;
+package com.example.assignment.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class HelloActivity extends AppCompatActivity {
+import com.example.assignment.R;
+
+public class WelcomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +25,7 @@ public class HelloActivity extends AppCompatActivity {
                 }
                 finally
                 {
-                    Intent activitymoi=new Intent(HelloActivity.this, LoginActivity.class);
+                    Intent activitymoi=new Intent(WelcomeActivity.this, LoginActivity.class);
                     startActivity(activitymoi);
                 }
             }

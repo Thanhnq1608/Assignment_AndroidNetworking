@@ -3,8 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/FPT_POLY/CNTT/MOB403_AndroidNetworking/AsmFinal_NguyenQuangThanh_PH11399/Assignment/app/src/main/res/layout/activity_insert.xml" value="0.14739583333333334" />
         <entry key="..\:/FPT_POLY/CNTT/MOB403_AndroidNetworking/AsmFinal_NguyenQuangThanh_PH11399/Assignment/app/src/main/res/layout/activity_log_up.xml" value="0.19293478260869565" />
+        <entry key="..\:/FPT_POLY/CNTT/MOB403_AndroidNetworking/AsmFinal_NguyenQuangThanh_PH11399/Assignment/app/src/main/res/layout/activity_main.xml" value="0.14739583333333334" />
         <entry key="..\:/FPT_POLY/CNTT/MOB403_AndroidNetworking/AsmFinal_NguyenQuangThanh_PH11399/Assignment/app/src/main/res/layout/item_comfirm.xml" value="0.144" />
+        <entry key="..\:/FPT_POLY/CNTT/MOB403_AndroidNetworking/AsmFinal_NguyenQuangThanh_PH11399/Assignment/app/src/main/res/layout/item_forget_password.xml" value="0.14447463768115942" />
       </map>
     </option>
   </component>

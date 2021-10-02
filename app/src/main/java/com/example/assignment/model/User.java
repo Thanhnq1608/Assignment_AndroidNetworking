@@ -1,18 +1,30 @@
 package com.example.assignment.model;
 
+import android.text.TextUtils;
+import android.util.Patterns;
+
 public class User {
-    private int id;
+    private int id,position;
     private String username,password,phonenumber,gmail;
 
     public User() {
     }
 
-    public User(int id, String username, String password, String phonenumber, String gmail) {
+    public User(int id, String username, String password,int position, String phonenumber, String gmail) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.position = position;
         this.phonenumber = phonenumber;
         this.gmail = gmail;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     public int getId() {
@@ -61,8 +73,22 @@ public class User {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", position=" + position +
                 ", phonenumber='" + phonenumber + '\'' +
                 ", gmail='" + gmail + '\'' +
                 '}';
+    }
+
+    public boolean isValidGmail(){
+        return !TextUtils.isEmpty(gmail) && Patterns.EMAIL_ADDRESS.matcher(gmail).matches();
+    }
+    public boolean isValidUsername(){
+        return !TextUtils.isEmpty(username);
+    }
+    public boolean isValidPass(){
+        return !TextUtils.isEmpty(password);
+    }
+    public boolean isValidPhone(){
+        return !TextUtils.isEmpty(phonenumber);
     }
 }

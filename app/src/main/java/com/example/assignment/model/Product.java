@@ -1,5 +1,7 @@
 package com.example.assignment.model;
 
+import android.text.TextUtils;
+
 public class Product {
 
     private int id;
@@ -79,5 +81,21 @@ public class Product {
                 ", soLuongTon=" + soLuongTon +
                 ", description='" + description + '\'' +
                 '}';
+    }
+
+    public boolean isValidAva(){
+        return !TextUtils.isEmpty(avatar);
+    }
+    public boolean isValidName(){
+        return !TextUtils.isEmpty(name);
+    }
+    public boolean isValidPrice(){
+        return !TextUtils.isEmpty(String.valueOf(price));
+    }
+    public boolean isValidSoluongton(){
+        return !TextUtils.isEmpty(String.valueOf(soLuongTon));
+    }
+    public boolean isValidDes(){
+        return !TextUtils.isEmpty(description);
     }
 }
